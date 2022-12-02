@@ -11,7 +11,7 @@ int main()
 {
     //SETUP
     int winWidth, winHeight;
-    Board myBoard("resources/boards/config.cfg", "resources/boards/testboard1.brd");
+    Board myBoard("resources/boards/config.cfg", "resources/boards/testboard2.brd");
     Sprites mySprites;
     winWidth = myBoard.GetRows() * 32;
     std::cout << "Width: " << winWidth << std::endl;
@@ -21,39 +21,52 @@ int main()
     //PROGRAM LOOP
 
     sf::RenderWindow window(sf::VideoMode(winWidth, winHeight), "Gio's Minesweeper");
-   
+    window.setFramerateLimit(60);
     while (window.isOpen())
     {
         sf::Event event;
+        bool leftMouseDown = true;
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
         window.clear();
-
-        int countPos = 0;
-        for (int i = 0; i < myBoard.GetRows(); i++)
+        for (int i = 0; i < myBoard.GetColumns(); i++)
         {
-            for (int j = 0; j < myBoard.GetColumns(); j++)
+            for (int j = 0; j < myBoard.GetRows(); j++)
             {
-                if (myBoard.boardTiles.at(countPos)->isBomb)
-                {
-                    mySprites.tileHidden.setPosition(i * 32, j * 32);
-                    window.draw(mySprites.tileHidden);
-                    mySprites.mine.setPosition(i * 32, j * 32);
-                    window.draw(mySprites.mine);
-                }
-                else
-                {
-                    mySprites.tileHidden.setPosition(i * 32, j * 32);
-                    window.draw(mySprites.tileHidden);
-                }
-                countPos++;
+                myBoard.DrawTile(j, i, &window, &mySprites);
             }
         }
+        mySprites.testOne.setPosition((myBoard.GetRows() - 6) * 32, (myBoard.GetColumns()) * 32);
+        mySprites.testTwo.setPosition((myBoard.GetRows() - 4) * 32, (myBoard.GetColumns()) * 32);
+        mySprites.testThree.setPosition((myBoard.GetRows() - 2) * 32, (myBoard.GetColumns()) * 32);
+        window.draw(mySprites.testOne);
+        window.draw(mySprites.testTwo);
+        window.draw(mySprites.testThree);
+        sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+        std::cout << mousePosition.x / 32 << " " << mousePosition.y / 32 << std::endl;
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+        {
 
+            if (!myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged)
+            {
+                myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged = true;
+            }
+            else
+            {
+                myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged = false;
+            }
+        }
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
 
+            if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden)
+            {
+                myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden = false;
+            }
+        }
         window.display();
     }
 

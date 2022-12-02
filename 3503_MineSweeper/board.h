@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "textures.h"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -15,15 +16,20 @@ class Board
 		bool isBomb;
 		sf::Vector2i tileCords;
 		Tile* adjacentTiles[8];
+		int adjacentBombCt;
+		bool isHidden;
+		bool isFlagged;
 	};
 
 
 public:
 	unsigned int tileCount;
-	std::vector<Tile*> boardTiles;
+	std::vector<std::vector<Tile*>> boardTiles;
 
 	Board(std::string fileCFG);
 	Board(std::string fileCFG, std::string fileBRD);
+
+	void DrawTile(int row, int column, sf::RenderWindow *window_, Sprites *sprites_);
 
 	void SetRows(int rows_);
 	int GetRows();
@@ -36,4 +42,5 @@ public:
 
 	void SetTiles();
 	void SetTiles(std::string fileBRD);
+
 };
