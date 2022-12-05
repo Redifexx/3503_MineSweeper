@@ -40,7 +40,17 @@ public:
 	sf::Sprite faceHappy;
 	sf::Sprite faceWin;
 	sf::Sprite faceLose;
-	sf::Sprite digits;
+	sf::Sprite digitsZero;
+	sf::Sprite digitsOne;
+	sf::Sprite digitsTwo;
+	sf::Sprite digitsThree;
+	sf::Sprite digitsFour;
+	sf::Sprite digitsFive;
+	sf::Sprite digitsSix;
+	sf::Sprite digitsSeven;
+	sf::Sprite digitsEight;
+	sf::Sprite digitsNine;
+	sf::Sprite digitsMinus;
 	sf::Sprite debug;
 	sf::Sprite testOne;
 	sf::Sprite testTwo;

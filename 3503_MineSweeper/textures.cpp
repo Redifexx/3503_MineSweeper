@@ -97,7 +97,78 @@ void Sprites::LoadSprites()
 	{
 		std::cout << "Texture Failed To Load!" << std::endl;
 	}
-	digits.setTexture(digitsTex);
+	digitsZero.setTexture(digitsTex);
+	digitsZero.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsOne.setTexture(digitsTex);
+	digitsOne.setTextureRect(sf::IntRect(sf::Vector2i(21, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsTwo.setTexture(digitsTex);
+	digitsTwo.setTextureRect(sf::IntRect(sf::Vector2i(42, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsThree.setTexture(digitsTex);
+	digitsThree.setTextureRect(sf::IntRect(sf::Vector2i(63, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsFour.setTexture(digitsTex);
+	digitsFour.setTextureRect(sf::IntRect(sf::Vector2i(84, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsFive.setTexture(digitsTex);
+	digitsFive.setTextureRect(sf::IntRect(sf::Vector2i(105, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsSix.setTexture(digitsTex);
+	digitsSix.setTextureRect(sf::IntRect(sf::Vector2i(126, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsSeven.setTexture(digitsTex);
+	digitsSeven.setTextureRect(sf::IntRect(sf::Vector2i(147, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsEight.setTexture(digitsTex);
+	digitsEight.setTextureRect(sf::IntRect(sf::Vector2i(168, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsNine.setTexture(digitsTex);
+	digitsNine.setTextureRect(sf::IntRect(sf::Vector2i(189, 0), sf::Vector2i(21, 32)));
+
+	if (!digitsTex.loadFromFile("resources/images/digits.png"))
+	{
+		std::cout << "Texture Failed To Load!" << std::endl;
+	}
+	digitsMinus.setTexture(digitsTex);
+	digitsMinus.setTextureRect(sf::IntRect(sf::Vector2i(210, 0), sf::Vector2i(21, 32)));
 
 	if (!debugTex.loadFromFile("resources/images/debug.png"))
 	{

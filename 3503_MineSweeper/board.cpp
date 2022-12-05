@@ -1,5 +1,14 @@
 #include "board.h"
 #include "textures.h"
+#include <random>
+
+std::mt19937 random_mt;
+
+int Random(int min, int max)
+{
+	std::uniform_int_distribution<int> dist(min, max);
+	return dist(random_mt);
+}
 
 Board::Board(std::string fileCFG)
 {
@@ -15,7 +24,7 @@ Board::Board(std::string fileCFG)
 		columns = std::stoi(curLine);
 
 		getline(myCFG, curLine);
-		mineCount = std::stoi(curLine);
+		CFGmineCount = std::stoi(curLine);
 	}
 	else
 	{
@@ -23,6 +32,9 @@ Board::Board(std::string fileCFG)
 	}
 
 	tileCount = rows * columns;
+	flagCount = 0;
+	debugMode = false;
+	mineCount = CFGmineCount;
 	SetTiles();
 }
 
@@ -40,7 +52,7 @@ Board::Board(std::string fileCFG, std::string fileBRD)
 		columns = std::stoi(curLine);
 
 		getline(myCFG, curLine);
-		mineCount = std::stoi(curLine);
+		CFGmineCount = std::stoi(curLine);
 	}
 	else
 	{
@@ -48,6 +60,9 @@ Board::Board(std::string fileCFG, std::string fileBRD)
 	}
 
 	tileCount = rows * columns;
+	flagCount = 0;
+	debugMode = false;
+	mineCount = 0;
 	SetTiles(fileBRD);
 }
 
@@ -83,33 +98,158 @@ int Board::GetMineCount()
 	return mineCount;
 }
 
+void Board::AddFlag()
+{
+	flagCount++;
+}
+
+void Board::RemoveFlag()
+{
+	flagCount--;
+}
+
+int Board::GetFlagCount()
+{
+	return flagCount;
+}
+
 void Board::SetTiles()
 {
-	/*
-	for (int i = 0; i < tileCount; i++)
-	{
-		Tile* currentTile = new Tile;
-		boardTiles.push_back(currentTile);
-	}*/
-	std::cout << "check" << std::endl;
+	//Tiles
+	mineCount = CFGmineCount;
 	for (int i = 0; i < columns; i++)
 	{
 		std::vector<Tile*>* curRow = new std::vector<Tile*>;
 		for (int j = 0; j < rows; j++)
 		{
 			Tile* currentTile = new Tile;
-			curRow->push_back(currentTile);
+			sf::Vector2i curCord(j, i);
+			currentTile->tileCords = curCord;
 			currentTile->isHidden = true;
 			currentTile->isFlagged = false;
+			currentTile->isBomb = false;
+			curRow->push_back(currentTile);
 		}
 		boardTiles.push_back(*curRow);
 	}
+	
+	//Bomb Pass
+	int seed = Random(1, 10);
+	int bombPlacementCount = 0;
+	while (bombPlacementCount < mineCount) 
+	{
+		std::cout << bombPlacementCount << std::endl;
+		for (int i = 0; i < columns; i++)
+		{
+			for (int j = 0; j < rows; j++)
+			{
+				if (boardTiles.at(i).at(j)->isBomb == false && bombPlacementCount < mineCount)
+				{
+					seed = Random(1, 10);
+					if (seed == 1)
+					{
+						boardTiles.at(i).at(j)->isBomb = true;
+						bombPlacementCount++;
+						std::cout << bombPlacementCount << std::endl;
+					}
+				}
+			}
+		}
+	} 
+	
+
+	//Clean Array
+	for (int i = 0; i < columns; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			for (int k = 0; k < 8; k++)
+			{
+				boardTiles.at(i).at(j)->adjacentTiles[k] = nullptr;
+			}
+		}
+	}
+
+	//Adjacent Bombs
+	for (int i = 0; i < columns; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			boardTiles.at(i).at(j)->adjacentBombCt = 0;
+			if ((j - 1) >= 0)
+			{
+				if ((i - 1) >= 0)
+				{
+					boardTiles.at(i).at(j)->adjacentTiles[0] = boardTiles.at(i - 1).at(j - 1);
+					if (boardTiles.at(i - 1).at(j - 1)->isBomb)
+					{
+						boardTiles.at(i).at(j)->adjacentBombCt++;
+					}
+				}
+				if ((i + 1) < columns)
+				{
+					boardTiles.at(i).at(j)->adjacentTiles[6] = boardTiles.at(i + 1).at(j - 1);
+					if (boardTiles.at(i + 1).at(j - 1)->isBomb)
+					{
+						boardTiles.at(i).at(j)->adjacentBombCt++;
+					}
+				}
+				boardTiles.at(i).at(j)->adjacentTiles[3] = boardTiles.at(i).at(j - 1);
+				if (boardTiles.at(i).at(j - 1)->isBomb)
+				{
+					boardTiles.at(i).at(j)->adjacentBombCt++;
+				}
+			}
+			if ((i - 1) >= 0)
+			{
+				boardTiles.at(i).at(j)->adjacentTiles[1] = boardTiles.at(i - 1).at(j);
+				if (boardTiles.at(i - 1).at(j)->isBomb)
+				{
+					boardTiles.at(i).at(j)->adjacentBombCt++;
+				}
+			}
+			if ((i + 1) < columns)
+			{
+				boardTiles.at(i).at(j)->adjacentTiles[6] = boardTiles.at(i + 1).at(j);
+				if (boardTiles.at(i + 1).at(j)->isBomb)
+				{
+					boardTiles.at(i).at(j)->adjacentBombCt++;
+				}
+			}
+			if (((j + 1) < rows))
+			{
+				if ((i - 1) >= 0)
+				{
+					boardTiles.at(i).at(j)->adjacentTiles[2] = boardTiles.at(i - 1).at(j + 1);
+					if (boardTiles.at(i - 1).at(j + 1)->isBomb)
+					{
+						boardTiles.at(i).at(j)->adjacentBombCt++;
+					}
+				}
+				if ((i + 1) < columns)
+				{
+					boardTiles.at(i).at(j)->adjacentTiles[7] = boardTiles.at(i + 1).at(j + 1);
+					if (boardTiles.at(i + 1).at(j + 1)->isBomb)
+					{
+						boardTiles.at(i).at(j)->adjacentBombCt++;
+					}
+				}
+				boardTiles.at(i).at(j)->adjacentTiles[4] = boardTiles.at(i).at(j + 1);
+				if (boardTiles.at(i).at(j + 1)->isBomb)
+				{
+					boardTiles.at(i).at(j)->adjacentBombCt++;
+				}
+			}
+		}
+	}
+
 }
 
 void Board::SetTiles(std::string fileBRD)
 {
 	std::ifstream myBRD(fileBRD);
 	std::string curLine;
+	mineCount = 0;
 	for (int i = 0; i < columns; i++)
 	{
 		getline(myBRD, curLine);
@@ -121,21 +261,17 @@ void Board::SetTiles(std::string fileBRD)
 			if (curLine[j] == '1')
 			{
 				currentTile->isBomb = true;
-				//std::cout << "BOMB" << std::endl;
+				mineCount++;
 			}
 			else
 			{
 				currentTile->isBomb = false;
 			}
-			sf::Vector2i curCord(j + 1, i + 1);
+			sf::Vector2i curCord(j, i);
 			currentTile->tileCords = curCord;
 			currentTile->isHidden = true;
 			currentTile->isFlagged = false;
 			curRow->push_back(currentTile);
-			//std::cout << j << ", " << i << std::endl;
-			//std::cout << i << " check " << j << std::endl;
-			//boardTiles.at(i).push_back(currentTile);
-			//std::cout << "check " << j << std::endl;
 		}
 		boardTiles.push_back(*curRow);
 	}
@@ -150,7 +286,6 @@ void Board::SetTiles(std::string fileBRD)
 				boardTiles.at(i).at(j)->adjacentTiles[k] = nullptr;
 			}
 		}
-		// 27 -> 1, 2, 3, 26, 28, 51, 52, 53
 	}
 
 
@@ -223,28 +358,10 @@ void Board::SetTiles(std::string fileBRD)
 					boardTiles.at(i).at(j)->adjacentBombCt++;
 				}
 			}
-			//std::cout << "test2 " << i << " " << j << std::endl;
-		}// 27 -> 1, 2, 3, 26, 28, 51, 52, 53
-	}
-	//std::cout << "check" << std::endl;
-	/*
-	for (int i = 0; i < columns; i++)
-	{
-		for (int j = 0; j < rows; j++)
-		{
-			int curCount = 0;
-			if (boardTiles.at(i).at(j)->isBomb)
-			{
-				//std::cout << "check" << std::endl;
-				curCount++;
-			}
-			boardTiles.at(i).at(j)->adjacentBombCt = curCount;
-			std::cout << "bombcount " << boardTiles.at(i).at(j)->adjacentBombCt << std::endl;
 		}
-		// 27 -> 1, 2, 3, 26, 28, 51, 52, 53
-	}*/
+	}
 
-	std::cout << "Board Tiles: " << boardTiles.size() << " TileCOUNT: " << tileCount << std::endl;
+	std::cout << "Board Tiles: " << boardTiles.size() << " TileCOUNT: " << tileCount << " minecount: " << mineCount << std::endl;
 }
 
 void Board::DrawTile(int row, int column, sf::RenderWindow *window_, Sprites *sprites_)
@@ -304,6 +421,40 @@ void Board::DrawTile(int row, int column, sf::RenderWindow *window_, Sprites *sp
 		{
 			sprites_->flag.setPosition(row * 32, column * 32);
 			window_->draw(sprites_->flag);
+		}
+	}
+	if (debugMode)
+	{
+		window_->draw(sprites_->mine);
+	}
+}
+
+void Board::Reset()
+{
+	flagCount = 0;
+	for (int i = 0; i < columns; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			delete boardTiles.at(i).at(j);
+		}
+		boardTiles.at(i).clear();
+	}
+	boardTiles.clear();
+	debugMode = false;
+}
+
+void Board::RevealEmpty(int i, int j)
+{
+	if ((!boardTiles.at(i).at(j)->isBomb) && boardTiles.at(i).at(j)->adjacentBombCt == 0)
+	{
+		boardTiles.at(i).at(j)->isHidden = false;
+		for (int k = 0; k < 8; k++)
+		{
+			if (boardTiles.at(i).at(j)->adjacentTiles[k] != nullptr && boardTiles.at(i).at(j)->adjacentTiles[k]->isHidden)
+			{
+				RevealEmpty(boardTiles.at(i).at(j)->adjacentTiles[k]->tileCords.y, boardTiles.at(i).at(j)->adjacentTiles[k]->tileCords.x);
+			}
 		}
 	}
 }
