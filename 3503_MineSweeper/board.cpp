@@ -33,6 +33,7 @@ Board::Board(std::string fileCFG)
 
 	tileCount = rows * columns;
 	flagCount = 0;
+	hiddenCount = 0;
 	debugMode = false;
 	mineCount = CFGmineCount;
 	SetTiles();
@@ -63,6 +64,7 @@ Board::Board(std::string fileCFG, std::string fileBRD)
 	flagCount = 0;
 	debugMode = false;
 	mineCount = 0;
+	hiddenCount = 0;
 	SetTiles(fileBRD);
 }
 
@@ -129,6 +131,7 @@ void Board::SetTiles()
 			currentTile->isFlagged = false;
 			currentTile->isBomb = false;
 			curRow->push_back(currentTile);
+			hiddenCount++;
 		}
 		boardTiles.push_back(*curRow);
 	}
@@ -272,6 +275,7 @@ void Board::SetTiles(std::string fileBRD)
 			currentTile->isHidden = true;
 			currentTile->isFlagged = false;
 			curRow->push_back(currentTile);
+			hiddenCount++;
 		}
 		boardTiles.push_back(*curRow);
 	}
@@ -442,19 +446,45 @@ void Board::Reset()
 	}
 	boardTiles.clear();
 	debugMode = false;
+	hiddenCount = 0;
 }
 
 void Board::RevealEmpty(int i, int j)
 {
-	if ((!boardTiles.at(i).at(j)->isBomb) && boardTiles.at(i).at(j)->adjacentBombCt == 0)
+	if ((!boardTiles.at(i).at(j)->isBomb))
 	{
-		boardTiles.at(i).at(j)->isHidden = false;
-		for (int k = 0; k < 8; k++)
+		if (boardTiles.at(i).at(j)->isHidden)
 		{
-			if (boardTiles.at(i).at(j)->adjacentTiles[k] != nullptr && boardTiles.at(i).at(j)->adjacentTiles[k]->isHidden)
+			boardTiles.at(i).at(j)->isHidden = false;
+			hiddenCount--;
+		}
+		if (boardTiles.at(i).at(j)->adjacentBombCt == 0)
+		{
+			for (int k = 0; k < 8; k++)
 			{
-				RevealEmpty(boardTiles.at(i).at(j)->adjacentTiles[k]->tileCords.y, boardTiles.at(i).at(j)->adjacentTiles[k]->tileCords.x);
+				if (boardTiles.at(i).at(j)->adjacentTiles[k] != nullptr)
+				{
+					if (boardTiles.at(i).at(j)->adjacentTiles[k]->isHidden)
+					{
+						boardTiles.at(i).at(j)->adjacentTiles[k]->isHidden = false;
+						hiddenCount--;
+						if (boardTiles.at(i).at(j)->adjacentTiles[k]->adjacentBombCt == 0)
+						{
+							RevealEmpty(boardTiles.at(i).at(j)->adjacentTiles[k]->tileCords.y, boardTiles.at(i).at(j)->adjacentTiles[k]->tileCords.x);
+						}
+					}
+				}
 			}
 		}
 	}
+}
+
+void Board::RemoveHidden() 
+{
+	hiddenCount--;
+}
+
+int Board::GetHidden() 
+{
+	return hiddenCount;
 }

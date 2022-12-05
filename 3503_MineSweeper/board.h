@@ -13,6 +13,7 @@ class Board
 	int mineCount;
 	int CFGmineCount;
 	int flagCount;
+	int hiddenCount;
 	struct Tile
 	{
 		bool isBomb;
@@ -49,6 +50,9 @@ public:
 
 	void AddFlag();
 	void RemoveFlag();
+
+	void RemoveHidden();
+	int GetHidden();
 
 	int GetFlagCount();
 

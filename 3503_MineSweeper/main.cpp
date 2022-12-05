@@ -25,6 +25,8 @@ int main()
     window.setFramerateLimit(60);
     int mineFlagCount = myBoard.GetMineCount();
     int mineFlagArr[4];
+    bool gameOver = false;
+    bool gameWon = false;
     sf::RectangleShape bkGround;
     bkGround.setSize(sf::Vector2f(winWidth, winHeight));
     bkGround.setFillColor(sf::Color::Cyan);
@@ -84,7 +86,7 @@ int main()
                 case sf::Event::MouseButtonPressed:
                     if (event.mouseButton.button == sf::Mouse::Right) 
                     {
-                        if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32)))
+                        if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32)) && (!gameOver && !gameWon))
                         {
                             if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden)
                             {
@@ -104,12 +106,26 @@ int main()
                     }
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32))) 
+                        if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32)) && (!gameOver && !gameWon))
                         {
                             if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden && !myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged)
                             {
-                                myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden = false;
-                                myBoard.RevealEmpty(mousePosition.y / 32, mousePosition.x / 32);
+                                if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isBomb)
+                                {
+                                    gameOver = true;
+                                    myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden = false;
+                                    break;
+                                }
+                                else
+                                {
+                                    myBoard.RevealEmpty(mousePosition.y / 32, mousePosition.x / 32);
+                                    std::cout << "hIDDEN: " << myBoard.GetHidden() << std::endl;
+                                    if (myBoard.GetHidden() == myBoard.GetMineCount())
+                                    {
+                                        gameWon = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                         if (((mousePosition.x >= faceTop.x) && (mousePosition.y >= faceTop.y)) && ((mousePosition.x <= faceBottom.x) && (mousePosition.y <= faceBottom.y)))
@@ -117,6 +133,8 @@ int main()
                             std::cout << "FACE" << std::endl;
                             myBoard.Reset();
                             myBoard.SetTiles();
+                            gameOver = false;
+                            gameWon = false;
                             mineFlagCount = myBoard.GetMineCount();
                         }
                         if ((mousePosition.x >= debugTop.x) && (mousePosition.y >= debugTop.y) && (mousePosition.x <= debugBottom.x) && (mousePosition.y <= debugBottom.y))
@@ -136,6 +154,8 @@ int main()
                             std::cout << "TEST ONE" << std::endl; 
                             myBoard.Reset();
                             myBoard.SetTiles("resources/boards/testboard1.brd");
+                            gameOver = false;
+                            gameWon = false;
                             mineFlagCount = myBoard.GetMineCount();
                         }
                         if ((mousePosition.x >= testTwoTop.x) && (mousePosition.y >= testTwoTop.y) && (mousePosition.x <= testTwoBottom.x) && (mousePosition.y <= testTwoBottom.y))
@@ -143,6 +163,8 @@ int main()
                             std::cout << "TEST TWO" << std::endl;
                             myBoard.Reset();
                             myBoard.SetTiles("resources/boards/testboard2.brd");
+                            gameOver = false;
+                            gameWon = false;
                             mineFlagCount = myBoard.GetMineCount();
                         }
                         if ((mousePosition.x >= testThreeTop.x) && (mousePosition.y >= testThreeTop.y) && (mousePosition.x <= testThreeBottom.x) && (mousePosition.y <= testThreeBottom.y))
@@ -150,6 +172,8 @@ int main()
                             std::cout << "TEST THREE" << std::endl;
                             myBoard.Reset();
                             myBoard.SetTiles("resources/boards/testboard3.brd");
+                            gameOver = false;
+                            gameWon = false;
                             mineFlagCount = myBoard.GetMineCount();
                         }
                     }
@@ -252,34 +276,25 @@ int main()
                 }
             }
         }
-       // //std::cout << "Count: " << mineFlagCount << std::endl;
-        //for (int i = 0; i < 4; i++)
-        //{
-            //std::cout << "Array: " << mineFlagArr[0] << " " << mineFlagArr[1] << " " << mineFlagArr[2] << " " << mineFlagArr[3] << std::endl;
-        //}
-
-
-
-        
-        mySprites.testOne.setPosition((myBoard.GetRows() - 7) * 32, (myBoard.GetColumns() + 0.5) * 32);
-        mySprites.testTwo.setPosition((myBoard.GetRows() - 5) * 32, (myBoard.GetColumns() + 0.5) * 32);
-        mySprites.testThree.setPosition((myBoard.GetRows() - 3) * 32, (myBoard.GetColumns() + 0.5) * 32);
-        mySprites.faceHappy.setPosition((myBoard.GetRows() / 2) * 32, (myBoard.GetColumns() + 0.5) * 32);
-        mySprites.debug.setPosition((myBoard.GetRows() - 9) * 32, (myBoard.GetColumns() + 0.5) * 32);
-        //mySprites.digitsOne.setPosition((myBoard.GetRows() - 18) * 32, (myBoard.GetColumns() + 0.5) * 32);
-
 
         window.draw(mySprites.testOne);
         window.draw(mySprites.testTwo);
         window.draw(mySprites.testThree);
-        window.draw(mySprites.faceHappy);
         window.draw(mySprites.debug);
-        //window.draw(mySprites.digitsOne);
 
-        //Counter
+        if (gameOver)
+        {
+            window.draw(mySprites.faceLose);
+        }
+        else if (gameWon)
+        {
+            window.draw(mySprites.faceWin);
+        }
+        else
+        {
+            window.draw(mySprites.faceHappy);
+        }
 
-
-       // std::cout << mousePosition.x / 32 << " " << mousePosition.y / 32 << std::endl;
         window.display();
     }
 
