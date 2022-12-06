@@ -427,6 +427,13 @@ void Board::DrawTile(int row, int column, sf::RenderWindow *window_, Sprites *sp
 			window_->draw(sprites_->flag);
 		}
 	}
+	if (boardTiles.at(column).at(row)->isFlagged && !boardTiles.at(column).at(row)->isHidden)
+	{
+		sprites_->tileHidden.setPosition(row * 32, column * 32);
+		window_->draw(sprites_->tileHidden);
+		sprites_->flag.setPosition(row * 32, column * 32);
+		window_->draw(sprites_->flag);
+	}
 	if (debugMode)
 	{
 		window_->draw(sprites_->mine);
