@@ -24,7 +24,7 @@ class Sprites
 	sf::Texture testTwoTex;
 	sf::Texture testThreeTex;
 	void LoadSprites();
-public: 
+public:
 	sf::Sprite mine;
 	sf::Sprite tileHidden;
 	sf::Sprite tileRevealed;

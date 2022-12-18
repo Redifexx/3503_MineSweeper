@@ -15,9 +15,9 @@ int main()
     Board myBoard("resources/boards/config.cfg");
     Sprites mySprites;
     winWidth = myBoard.GetRows() * 32;
-    std::cout << "Width: " << winWidth << std::endl;
+    //std::cout << "Width: " << winWidth << std::endl;
     winHeight = (myBoard.GetColumns() * 32) + 100;
-    std::cout << "Height: " << winHeight << std::endl;
+    //std::cout << "Height: " << winHeight << std::endl;
 
     //PROGRAM LOOP
 
@@ -79,110 +79,110 @@ int main()
         {
             switch (event.type)
             {
-                case sf::Event::Closed:
-                    window.close();
-                    break;
+            case sf::Event::Closed:
+                window.close();
+                break;
 
-                case sf::Event::MouseButtonPressed:
-                    if (event.mouseButton.button == sf::Mouse::Right) 
+            case sf::Event::MouseButtonPressed:
+                if (event.mouseButton.button == sf::Mouse::Right)
+                {
+                    if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32)) && (!gameOver && !gameWon))
                     {
-                        if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32)) && (!gameOver && !gameWon))
+                        if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden)
                         {
-                            if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden)
+                            if (!myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged)
                             {
-                                if (!myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged)
-                                {
-                                    myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged = true;
-                                    myBoard.AddFlag();
-                                }
-                                else
-                                {
-                                    myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged = false;
-                                    myBoard.RemoveFlag();
-                                }
-                            }
-                            mineFlagCount = myBoard.GetMineCount() - myBoard.GetFlagCount();
-                        }
-                    }
-                    if (event.mouseButton.button == sf::Mouse::Left)
-                    {
-                        if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32)) && (!gameOver && !gameWon))
-                        {
-                            if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden && !myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged)
-                            {
-                                if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isBomb)
-                                {
-                                    gameOver = true;
-                                    myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden = false;
-                                    break;
-                                }
-                                else
-                                {
-                                    myBoard.RevealEmpty(mousePosition.y / 32, mousePosition.x / 32);
-                                    std::cout << "hIDDEN: " << myBoard.GetHidden() << std::endl;
-                                    if (myBoard.GetHidden() == myBoard.GetMineCount())
-                                    {
-                                        gameWon = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        if (((mousePosition.x >= faceTop.x) && (mousePosition.y >= faceTop.y)) && ((mousePosition.x <= faceBottom.x) && (mousePosition.y <= faceBottom.y)))
-                        {
-                            std::cout << "FACE" << std::endl;
-                            myBoard.Reset();
-                            myBoard.SetTiles();
-                            gameOver = false;
-                            gameWon = false;
-                            mineFlagCount = myBoard.GetMineCount();
-                        }
-                        if ((mousePosition.x >= debugTop.x) && (mousePosition.y >= debugTop.y) && (mousePosition.x <= debugBottom.x) && (mousePosition.y <= debugBottom.y))
-                        {
-                            std::cout << "DEBUG" << std::endl;
-                            if (myBoard.debugMode == false)
-                            {
-                                myBoard.debugMode = true;
+                                myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged = true;
+                                myBoard.AddFlag();
                             }
                             else
                             {
-                                myBoard.debugMode = false;
+                                myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged = false;
+                                myBoard.RemoveFlag();
                             }
                         }
-                        if ((mousePosition.x >= testOneTop.x) && (mousePosition.y >= testOneTop.y) && (mousePosition.x <= testOneBottom.x) && (mousePosition.y <= testOneBottom.y))
+                        mineFlagCount = myBoard.GetMineCount() - myBoard.GetFlagCount();
+                    }
+                }
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    if (((mousePosition.x >= 0) && (mousePosition.y >= 0)) && ((mousePosition.x <= myBoard.GetRows() * 32) && (mousePosition.y <= myBoard.GetColumns() * 32)) && (!gameOver && !gameWon))
+                    {
+                        if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden && !myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isFlagged)
                         {
-                            std::cout << "TEST ONE" << std::endl; 
-                            myBoard.Reset();
-                            myBoard.SetTiles("resources/boards/testboard1.brd");
-                            gameOver = false;
-                            gameWon = false;
-                            mineFlagCount = myBoard.GetMineCount();
-                        }
-                        if ((mousePosition.x >= testTwoTop.x) && (mousePosition.y >= testTwoTop.y) && (mousePosition.x <= testTwoBottom.x) && (mousePosition.y <= testTwoBottom.y))
-                        {
-                            std::cout << "TEST TWO" << std::endl;
-                            myBoard.Reset();
-                            myBoard.SetTiles("resources/boards/testboard2.brd");
-                            gameOver = false;
-                            gameWon = false;
-                            mineFlagCount = myBoard.GetMineCount();
-                        }
-                        if ((mousePosition.x >= testThreeTop.x) && (mousePosition.y >= testThreeTop.y) && (mousePosition.x <= testThreeBottom.x) && (mousePosition.y <= testThreeBottom.y))
-                        {
-                            std::cout << "TEST THREE" << std::endl;
-                            myBoard.Reset();
-                            myBoard.SetTiles("resources/boards/testboard3.brd");
-                            gameOver = false;
-                            gameWon = false;
-                            mineFlagCount = myBoard.GetMineCount();
+                            if (myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isBomb)
+                            {
+                                gameOver = true;
+                                myBoard.boardTiles.at(mousePosition.y / 32).at(mousePosition.x / 32)->isHidden = false;
+                                break;
+                            }
+                            else
+                            {
+                                myBoard.RevealEmpty(mousePosition.y / 32, mousePosition.x / 32);
+                                if (myBoard.GetHidden() == myBoard.GetMineCount())
+                                {
+                                    gameWon = true;
+                                    break;
+                                }
+                            }
                         }
                     }
-                    break;
+                    if (((mousePosition.x >= faceTop.x) && (mousePosition.y >= faceTop.y)) && ((mousePosition.x <= faceBottom.x) && (mousePosition.y <= faceBottom.y)))
+                    {
+                        std::cout << "Board has been reset!" << std::endl;
+                        myBoard.Reset();
+                        myBoard.SetTiles();
+                        gameOver = false;
+                        gameWon = false;
+                        mineFlagCount = myBoard.GetMineCount();
+                    }
+                    if ((mousePosition.x >= debugTop.x) && (mousePosition.y >= debugTop.y) && (mousePosition.x <= debugBottom.x) && (mousePosition.y <= debugBottom.y) && (!gameOver && !gameWon))
+                    {
+                        if (myBoard.debugMode == false)
+                        {
+                            myBoard.debugMode = true;
+                            std::cout << "Debug Mode Enabled!" << std::endl;
+                        }
+                        else
+                        {
+                            myBoard.debugMode = false;
+                            std::cout << "Debug Mode Disabled!" << std::endl;
+                        }
+                    }
+                    if ((mousePosition.x >= testOneTop.x) && (mousePosition.y >= testOneTop.y) && (mousePosition.x <= testOneBottom.x) && (mousePosition.y <= testOneBottom.y))
+                    {
+                        std::cout << "Test Board 1 Loaded!" << std::endl;
+                        myBoard.Reset();
+                        myBoard.SetTiles("resources/boards/testboard1.brd");
+                        gameOver = false;
+                        gameWon = false;
+                        mineFlagCount = myBoard.GetMineCount();
+                    }
+                    if ((mousePosition.x >= testTwoTop.x) && (mousePosition.y >= testTwoTop.y) && (mousePosition.x <= testTwoBottom.x) && (mousePosition.y <= testTwoBottom.y))
+                    {
+                        std::cout << "Test Board 2 Loaded!" << std::endl;
+                        myBoard.Reset();
+                        myBoard.SetTiles("resources/boards/testboard2.brd");
+                        gameOver = false;
+                        gameWon = false;
+                        mineFlagCount = myBoard.GetMineCount();
+                    }
+                    if ((mousePosition.x >= testThreeTop.x) && (mousePosition.y >= testThreeTop.y) && (mousePosition.x <= testThreeBottom.x) && (mousePosition.y <= testThreeBottom.y))
+                    {
+                        std::cout << "Test Board 3 Loaded!" << std::endl;
+                        myBoard.Reset();
+                        myBoard.SetTiles("resources/boards/testboard3.brd");
+                        gameOver = false;
+                        gameWon = false;
+                        mineFlagCount = myBoard.GetMineCount();
+                    }
+                }
+                break;
 
-                default:
-                    break;
+            default:
+                break;
             }
-        
+
         }
         window.clear();
         window.draw(bkGround);

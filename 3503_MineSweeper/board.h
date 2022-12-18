@@ -34,7 +34,7 @@ public:
 	Board(std::string fileCFG, std::string fileBRD);
 
 	void Reset();
-	void DrawTile(int row, int column, sf::RenderWindow *window_, Sprites *sprites_);
+	void DrawTile(int row, int column, sf::RenderWindow* window_, Sprites* sprites_);
 
 	void SetRows(int rows_);
 	int GetRows();
@@ -57,5 +57,4 @@ public:
 	int GetFlagCount();
 
 	void RevealEmpty(int i, int j);
-
 };

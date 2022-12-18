@@ -135,13 +135,13 @@ void Board::SetTiles()
 		}
 		boardTiles.push_back(*curRow);
 	}
-	
+
 	//Bomb Pass
 	int seed = Random(1, 10);
 	int bombPlacementCount = 0;
-	while (bombPlacementCount < mineCount) 
+	while (bombPlacementCount < mineCount)
 	{
-		std::cout << bombPlacementCount << std::endl;
+		//std::cout << bombPlacementCount << std::endl;
 		for (int i = 0; i < columns; i++)
 		{
 			for (int j = 0; j < rows; j++)
@@ -153,13 +153,13 @@ void Board::SetTiles()
 					{
 						boardTiles.at(i).at(j)->isBomb = true;
 						bombPlacementCount++;
-						std::cout << bombPlacementCount << std::endl;
+						//std::cout << bombPlacementCount << std::endl;
 					}
 				}
 			}
 		}
-	} 
-	
+	}
+
 
 	//Clean Array
 	for (int i = 0; i < columns; i++)
@@ -256,7 +256,7 @@ void Board::SetTiles(std::string fileBRD)
 	for (int i = 0; i < columns; i++)
 	{
 		getline(myBRD, curLine);
-		std::cout << curLine << std::endl;
+		//std::cout << curLine << std::endl;
 		std::vector<Tile*>* curRow = new std::vector<Tile*>;
 		for (int j = 0; j < rows; j++)
 		{
@@ -279,7 +279,7 @@ void Board::SetTiles(std::string fileBRD)
 		}
 		boardTiles.push_back(*curRow);
 	}
-	
+
 
 	for (int i = 0; i < columns; i++)
 	{
@@ -365,10 +365,10 @@ void Board::SetTiles(std::string fileBRD)
 		}
 	}
 
-	std::cout << "Board Tiles: " << boardTiles.size() << " TileCOUNT: " << tileCount << " minecount: " << mineCount << std::endl;
+	//std::cout << "Board Tiles: " << boardTiles.size() << " TileCOUNT: " << tileCount << " minecount: " << mineCount << std::endl;
 }
 
-void Board::DrawTile(int row, int column, sf::RenderWindow *window_, Sprites *sprites_)
+void Board::DrawTile(int row, int column, sf::RenderWindow* window_, Sprites* sprites_)
 {
 	sprites_->tileRevealed.setPosition(row * 32, column * 32);
 	window_->draw(sprites_->tileRevealed);
@@ -460,7 +460,7 @@ void Board::RevealEmpty(int i, int j)
 {
 	if ((!boardTiles.at(i).at(j)->isBomb))
 	{
-		if (boardTiles.at(i).at(j)->isHidden)
+		if (boardTiles.at(i).at(j)->isHidden && !boardTiles.at(i).at(j)->isFlagged)
 		{
 			boardTiles.at(i).at(j)->isHidden = false;
 			hiddenCount--;
@@ -471,7 +471,7 @@ void Board::RevealEmpty(int i, int j)
 			{
 				if (boardTiles.at(i).at(j)->adjacentTiles[k] != nullptr)
 				{
-					if (boardTiles.at(i).at(j)->adjacentTiles[k]->isHidden)
+					if (boardTiles.at(i).at(j)->adjacentTiles[k]->isHidden && !boardTiles.at(i).at(j)->adjacentTiles[k]->isFlagged)
 					{
 						boardTiles.at(i).at(j)->adjacentTiles[k]->isHidden = false;
 						hiddenCount--;
@@ -486,12 +486,12 @@ void Board::RevealEmpty(int i, int j)
 	}
 }
 
-void Board::RemoveHidden() 
+void Board::RemoveHidden()
 {
 	hiddenCount--;
 }
 
-int Board::GetHidden() 
+int Board::GetHidden()
 {
 	return hiddenCount;
 }
