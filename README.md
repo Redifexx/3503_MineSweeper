@@ -1,4 +1,4 @@
-# 3503_MineSweeper
+# SFML MineSweeper
 
 I programmed Minesweeper for my C++ class using the SFML library. The sprites were provided by the class.
 
